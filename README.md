@@ -14,6 +14,14 @@ bundle
 rails s
 ```
 
+## Examples
+
+```
+http://localhost:3000/articles?page=1
+http://localhost:3000/articles?page=2
+...
+```
+
 ## Hot to run tests
 
 ```
