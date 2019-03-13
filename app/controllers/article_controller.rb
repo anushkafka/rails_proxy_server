@@ -1,20 +1,29 @@
 class ArticleController < ActionController::Base
   def index
-    cached_reponse = ApiResponseCachingService.get(params)
+    cached_reponse = ApiResponseCachingService.get(cache_key(params))
 
     if cached_reponse
       render json: cached_reponse
     else
       response = api_fetch(params)
-      ApiResponseCachingService.set(params, response)
+      ApiResponseCachingService.set(cache_key(params), response)
       
       render json: response
     end
   end
 
   def api_fetch(params)
-    response = HTTParty.get(url, :query => permitted_params(params))
+    begin
+      response = HTTParty.get(url, :query => permitted_params(params))
+    rescue 
+      return 500  # For now lets assume everything that goes wrong returns a 500
+    end
+
     response.parsed_response
+  end
+
+  def cache_key(params)
+    params[:page]
   end
 
   def permitted_params(params)
